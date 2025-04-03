@@ -1,0 +1,248 @@
+// import 'package:cloud_firestore/cloud_firestore.dart';
+// import 'package:firebase_auth/firebase_auth.dart';
+// import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:image_picker/image_picker.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:file_picker/file_picker.dart';
+// import 'dart:io';
+// import 'package:uuid/uuid.dart';
+
+// class BookController extends GetxController {
+//   TextEditingController bookTitle = TextEditingController();
+//   TextEditingController desc = TextEditingController();
+//   TextEditingController authName = TextEditingController();
+//   TextEditingController aboutAuth = TextEditingController();
+//   TextEditingController pages = TextEditingController();
+//   TextEditingController audioLen = TextEditingController();
+//   TextEditingController language = TextEditingController();
+//   TextEditingController price = TextEditingController();
+
+//   var selectedImagePath = ''.obs;
+//   var imageUrl = ''.obs; // Store image URL
+//   var selectedPdfPath = ''.obs;
+//   var pdfUrl = ''.obs; // Store PDF URL
+//   final storage = FirebaseStorage.instance;
+//   final db = FirebaseFirestore.instance;
+//   final auth = FirebaseAuth.instance;
+//   var audioUrl = ''.obs; // Store MP3 URL
+//   var selectedAudioPath = ''.obs;
+
+//   /// Picks an image from the given source and uploads it to Firebase Storage
+//   Future<void> pickImage(ImageSource source) async {
+//     final ImagePicker picker = ImagePicker();
+//     final XFile? image = await picker.pickImage(source: source);
+
+//     if (image != null) {
+//       print(image.path);
+//       selectedImagePath.value = image.path; // Update the selected image path
+//       print('Image selected: ${selectedImagePath.value}');
+//       uploadImageToFirebaseStorage(image.path);
+//     } else {
+//       print('No image selected');
+//     }
+//   }
+
+//   // Uploads an image to Firebase Storage and returns the image URL
+//   Future<String?> uploadImageToFirebaseStorage(String imagePath) async {
+//     try {
+//       var uuid = Uuid();
+//       String uniqueFileName = "${uuid.v4()}.jpg"; // Generate unique file name
+//       final path = "ebook_fileimage/$uniqueFileName"; // Firebase Storage path
+//       final file = File(imagePath); // File object from the picked image
+//       final ref = storage.ref().child(path); // Firebase Storage reference
+
+//       // Upload the file to Firebase Storage
+//       await ref.putFile(file);
+
+//       // Get and return the URL of the uploaded image
+//       String downloadURL = await ref.getDownloadURL();
+//       imageUrl.value = downloadURL;
+//       print("✅ Image uploaded successfully: $downloadURL");
+//       return downloadURL;
+//     } catch (e) {
+//       print("❌ Error uploading image: $e");
+//       return null; // Return null on error
+//     }
+//   }
+
+//   /// Picks a PDF file and uploads it to Firebase Storage
+//   Future<void> pickPdfFile() async {
+//     FilePickerResult? result = await FilePicker.platform.pickFiles(
+//       type: FileType.custom,
+//       allowedExtensions: ['pdf'],
+//     );
+
+//     if (result != null && result.files.single.path != null) {
+//       selectedPdfPath.value = result.files.single.path!;
+//       print('PDF selected: ${selectedPdfPath.value}');
+//       uploadPdfToFirebaseStorage(selectedPdfPath.value);
+//     } else {
+//       print('No PDF file selected');
+//     }
+//   }
+
+//   /// Uploads a PDF file to Firebase Storage and returns the file URL
+//   Future<String?> uploadPdfToFirebaseStorage(String pdfPath) async {
+//     try {
+//       var uuid = Uuid();
+//       String uniqueFileName = "${uuid.v4()}.pdf"; // Generate unique file name
+//       final path = "ebook_pdfs/$uniqueFileName"; // Firebase Storage path
+//       final file = File(pdfPath); // File object from the selected PDF
+//       final ref = storage.ref().child(path); // Firebase Storage reference
+
+//       // Upload the file to Firebase Storage
+//       await ref.putFile(file);
+
+//       // Get and return the URL of the uploaded PDF
+//       String downloadURL = await ref.getDownloadURL();
+//       pdfUrl.value = downloadURL;
+//       print("✅ PDF uploaded successfully: $downloadURL");
+//       return downloadURL;
+//     } catch (e) {
+//       print("❌ Error uploading PDF: $e");
+//       return null; // Return null on error
+//     }
+//   }
+
+//   /// Picks an MP3 file and uploads it to Firebase Storage
+//   Future<void> pickAudioFile() async {
+//     FilePickerResult? result = await FilePicker.platform.pickFiles(
+//       type: FileType.custom,
+//       allowedExtensions: ['mp3'], // Allow only MP3 files
+//     );
+
+//     if (result != null && result.files.single.path != null) {
+//       selectedAudioPath.value = result.files.single.path!;
+//       print('🎵 Audio selected: ${selectedAudioPath.value}');
+//       uploadAudioToFirebaseStorage(selectedAudioPath.value);
+//     } else {
+//       print('❌ No audio file selected');
+//     }
+//   }
+
+//   /// Uploads an MP3 file to Firebase Storage and returns the file URL
+//   Future<String?> uploadAudioToFirebaseStorage(String audioPath) async {
+//     try {
+//       var uuid = Uuid();
+//       String uniqueFileName = "${uuid.v4()}.mp3"; // Generate unique file name
+//       final path = "ebook_audio/$uniqueFileName"; // Firebase Storage path
+//       final file = File(audioPath); // File object from the selected MP3
+//       final ref = storage.ref().child(path); // Firebase Storage reference
+
+//       // Upload the file to Firebase Storage
+//       await ref.putFile(file);
+
+//       // Get and return the URL of the uploaded audio file
+//       String downloadURL = await ref.getDownloadURL();
+//       audioUrl.value = downloadURL;
+//       print("✅ Audio uploaded successfully: $downloadURL");
+//       return downloadURL;
+//     } catch (e) {
+//       print("❌ Error uploading audio: $e");
+//       return null; // Return null on error
+//     }
+//   }
+// }
+
+
+================================================================================================
+
+
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
+import 'package:uuid/uuid.dart';
+
+class BookController extends GetxController {
+  TextEditingController bookTitle = TextEditingController();
+  TextEditingController desc = TextEditingController();
+  TextEditingController authName = TextEditingController();
+  TextEditingController aboutAuth = TextEditingController();
+  TextEditingController pages = TextEditingController();
+  TextEditingController audioLen = TextEditingController();
+  TextEditingController language = TextEditingController();
+  TextEditingController price = TextEditingController();
+
+  var selectedImagePath = ''.obs;
+  var imageUrl = ''.obs;
+  var selectedPdfPath = ''.obs;
+  var pdfUrl = ''.obs;
+  var selectedAudioPath = ''.obs;
+  var audioUrl = ''.obs;
+
+  final storage = FirebaseStorage.instance;
+  final db = FirebaseFirestore.instance;
+  final auth = FirebaseAuth.instance;
+
+  /// Generic file upload method
+  Future<String?> uploadFileToFirebaseStorage(String filePath, String folder, String extension) async {
+    try {
+      var uuid = Uuid();
+      String uniqueFileName = "${uuid.v4()}.$extension";
+      final path = "$folder/$uniqueFileName";
+      final file = File(filePath);
+      final ref = storage.ref().child(path);
+      
+      await ref.putFile(file);
+      String downloadURL = await ref.getDownloadURL();
+      print("✅ File uploaded successfully: $downloadURL");
+      return downloadURL;
+    } catch (e) {
+      print("❌ Error uploading file: $e");
+      return null;
+    }
+  }
+
+  /// Picks an image and uploads it
+  Future<void> pickImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      selectedImagePath.value = image.path;
+      print('Image selected: ${selectedImagePath.value}');
+      imageUrl.value = await uploadFileToFirebaseStorage(image.path, "ebook_fileimage", "jpg") ?? "";
+    } else {
+      print('No image selected');
+    }
+  }
+
+  /// Picks a PDF file and uploads it
+  Future<void> pickPdfFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
+
+    if (result != null && result.files.single.path != null) {
+      selectedPdfPath.value = result.files.single.path!;
+      print('PDF selected: ${selectedPdfPath.value}');
+      pdfUrl.value = await uploadFileToFirebaseStorage(selectedPdfPath.value, "ebook_pdfs", "pdf") ?? "";
+    } else {
+      print('No PDF file selected');
+    }
+  }
+
+  /// Picks an MP3 file and uploads it
+  Future<void> pickAudioFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['mp3'],
+    );
+
+    if (result != null && result.files.single.path != null) {
+      selectedAudioPath.value = result.files.single.path!;
+      print('🎵 Audio selected: ${selectedAudioPath.value}');
+      audioUrl.value = await uploadFileToFirebaseStorage(selectedAudioPath.value, "ebook_audio", "mp3") ?? "";
+    } else {
+      print('❌ No audio file selected');
+    }
+  }
+}
